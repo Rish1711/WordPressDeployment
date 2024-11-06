@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = readJSON file: 'config/jenkins-config.json'  // Load config from file
+        EC2_INSTANCE = DOCKER_IMAGE.ec2_instance_ip
+        SSH_KEY_PATH = DOCKER_IMAGE.ssh_key_path
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Rish1711/WordPressDeployment.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker-compose -f ${DOCKER_IMAGE.docker_compose_file} build"
+                }
+            }
+        }
+
+        stage('Deploy to EC2') {
+            steps {
+                script {
+                    // Using withCredentials for secure handling of SSH keys
+                    withCredentials([file(credentialsId: 'ec2-ssh-key', variable: 'EC2_SSH_KEY')]) {
+                        sh """
+                        ssh -i ${EC2_SSH_KEY} ec2-user@${EC2_INSTANCE} 'docker-compose -f /path/to/docker-compose.yml up -d'
+                        """
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
