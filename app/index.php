@@ -1,32 +1,25 @@
 <?php
-// MySQL database connection details
-$host = '192.168.1.100'; // IP of MySQL container (Machine 1)
-$username = 'user'; // Your MySQL username
-$password = 'password'; // Your MySQL password
-$dbname = 'myapp_db'; // Your MySQL database name
 
-// Create connection
+// Load environment variables from .env file
+require_once 'vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+// Accessing environment variables
+$host = getenv('DB_HOST');
+$dbname = getenv('DB_DATABASE');
+$username = getenv('DB_USERNAME');
+$password = getenv('DB_PASSWORD');
+
+// Using MySQLi to connect to the database
 $conn = new mysqli($host, $username, $password, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+echo "Connected successfully";
 
-// Handling form submission to add a new record
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'], $_POST['email'])) {
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-
-    // SQL query to insert data into the database
-    $sql = "INSERT INTO users (name, email) VALUES ('$name', '$email')";
-
-    if ($conn->query($sql) === TRUE) {
-        echo "New record created successfully.";
-    } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
-    }
-}
 
 // Fetching all records from the users table
 $sql = "SELECT id, name, email FROM users";
