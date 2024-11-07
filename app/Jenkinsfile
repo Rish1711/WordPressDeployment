@@ -1,42 +1,24 @@
 pipeline {
     agent any
     environment {
-        DB_HOST = '65.0.80.186:2375'
-        DB_DATABASE = 'Plutushub'
-        DB_USERNAME = 'user_plutus'
+        MYSQL_ROOT_PASSWORD = credentials('MYSQL_ROOT_PASSWORD') // Jenkins credentials
     }
     stages {
-        stage('Build Docker Image') {
+        stage('Clone Repository') {
+            steps {
+                // Checkout the main branch explicitly
+                git branch: 'main', url: 'https://github.com/Rish1711/WordPressDeployment.git'
+            }
+        }
+        stage('Build and Deploy') {
             steps {
                 script {
-                    // Build the Docker image
-                    sh 'docker build -t php-mysql-app .'
+                    // Build WordPress Image
+                    sh 'docker build -t wordpress_app .'
+                    // Deploy using docker-compose.yml
+                    sh 'docker stack deploy -c docker-compose.yml wordpress_stack'
                 }
             }
-        }
-        stage('Deploy Container') {
-            steps {
-                withCredentials([string(credentialsId: 'MYSQL_USER_PASSWORD', variable: 'DB_PASSWORD')]) {
-                    script {
-                        // Run the container with environment variables
-                        sh '''
-                            docker run -d --name php-mysql-app-container \
-                            -e DB_HOST=$DB_HOST \
-                            -e DB_DATABASE=$DB_DATABASE \
-                            -e DB_USERNAME=$DB_USERNAME \
-                            -e DB_PASSWORD=$DB_PASSWORD \
-                            -v $WORKSPACE/wp-content:/var/www/html/wp-content \
-                            -p 8080:80 php-mysql-app
-                        '''
-                    }
-                }
-            }
-        }
-    }
-    post {
-        cleanup {
-            // Stop and remove the container after the build
-            sh 'docker rm -f php-mysql-app-container || true'
         }
     }
 }
