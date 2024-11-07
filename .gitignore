@@ -1,15 +1,3 @@
-# Ignore environment files
-.env
-credentials/
-config/
-
-# Ignore node_modules or vendor directories (if any dependencies are installed)
-node_modules/
-vendor/
-
-# Ignore Docker-related files
-docker-compose.override.yml
-
 # Ignore log files and other temporary files
 *.log
 *.tmp
