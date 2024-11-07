@@ -3,7 +3,7 @@ pipeline {
     environment {
         MYSQL_ROOT_PASSWORD = credentials('MYSQL_ROOT_PASSWORD') // Jenkins credential ID for MySQL password
         DOCKER_NODE = '13.232.170.253' // IP or hostname of your Docker Swarm manager node
-        SSH_USER = 'docker_user' // Replace with SSH user with access to Docker node
+        SSH_USER = 'docker-user' // Replace with SSH user with access to Docker node
     }
     stages {
         stage('Clone Repository') {
