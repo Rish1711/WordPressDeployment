@@ -8,7 +8,7 @@ RUN docker-php-ext-install mysqli
 COPY config/apache-config.conf /etc/apache2/sites-available/000-default.conf
 
 # Copy application files
-COPY index.php /var/www/html/index.php
+COPY app/index.php /var/www/html/index.php
 
 # Set up persistent storage for /wp-content
 VOLUME /var/www/html/wp-content
