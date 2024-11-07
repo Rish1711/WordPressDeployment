@@ -5,7 +5,7 @@ services:
     image: wordpress:latest
     container_name: wordpress_app
     environment:
-      WORDPRESS_DB_HOST: "65.0.80.186:2375"
+      WORDPRESS_DB_HOST: "13.235.100.70:2375"
       WORDPRESS_DB_NAME: "Plutushub"
       WORDPRESS_DB_USER: "user_plutus"
       WORDPRESS_DB_PASSWORD: "${{MYSQL_ROOT_PASSWORD}}" # Jenkins credentials
@@ -16,7 +16,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == 65.0.80.186
+          - node.hostname == 13.235.100.70
 
 volumes:
   wp_content:

@@ -1,7 +1,7 @@
 <?php
 
 // Accessing environment variables directly
-$host = "65.0.80.186:2375";
+$host = "13.235.100.70:2375";
 $dbname = "Plutushub";
 $username = "user_plutus";
 $password = getenv('DB_PASSWORD');
