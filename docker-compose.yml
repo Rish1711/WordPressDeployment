@@ -16,7 +16,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == 13.232.113.48
+          - node.hostname == 13.232.170.253
 
 volumes:
   wp_content:
