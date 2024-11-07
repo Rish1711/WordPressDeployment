@@ -14,22 +14,26 @@ pipeline {
         stage('Build and Deploy') {
             steps {
                 script {
-                    // Build WordPress Image locally on Jenkins node
-                    sh 'docker build -t wordpress_app .'
-                    
-                    // Copy docker-compose.yml and built image to the Docker node
-                    sh """
-                    docker save wordpress_app | ssh ${SSH_USER}@${DOCKER_NODE} 'docker load'
-                    scp docker-compose.yml ${SSH_USER}@${DOCKER_NODE}:~/
-                    """
-                    
-                    // Run Docker commands on the specified node
-                    sh """
-                    ssh ${SSH_USER}@${DOCKER_NODE} '
-                        docker swarm init || true  # Initialize Docker Swarm; ignore if already initialized
-                        MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} docker stack deploy -c docker-compose.yml wordpress_stack
-                    '
-                    """
+                    // Load the Docker image to the target node
+            sh '''
+            ssh docker-user@13.232.170.253 'docker load'
+            docker save wordpress_app
+            '''
+
+            // Transfer the docker-compose.yml file
+            sh '''
+            scp docker-compose.yml docker-user@13.232.170.253:~/
+            '''
+
+            // Only initialize Swarm if not already part of a swarm
+            sh '''
+            ssh docker-user@13.232.170.253 '
+                if ! docker info | grep -q "Swarm: active"; then
+                    docker swarm init
+                fi
+                MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD docker stack deploy -c docker-compose.yml wordpress_stack
+            '
+            '''
                 }
             }
         }
