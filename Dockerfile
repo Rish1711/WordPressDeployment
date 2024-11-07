@@ -5,7 +5,7 @@ FROM php:7.4-apache
 RUN docker-php-ext-install mysqli
 
 # Copy the Apache configuration file
-COPY config/apache-config.conf /etc/apache2/sites-available/000-default.conf
+COPY app/config/apache-config.conf /etc/apache2/sites-available/000-default.conf
 
 # Copy application files
 COPY app/index.php /var/www/html/index.php
