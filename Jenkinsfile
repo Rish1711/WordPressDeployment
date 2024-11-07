@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        MYSQL_ROOT_PASSWORD = credentials('MYSQL_ROOT_PASSWORD') // Jenkins credential ID for MySQL password
-        DOCKER_NODE = '13.232.170.253' // IP or hostname of your Docker Swarm manager node
-        SSH_USER = 'docker-user' // Replace with SSH user with access to Docker node
+        MYSQL_ROOT_PASSWORD = credentials('MYSQL_ROOT_PASSWORD')
+        SSH_USER = 'docker-user'
+        DOCKER_NODE_IP = '13.232.170.253'
     }
     stages {
         stage('Clone Repository') {
@@ -14,29 +14,34 @@ pipeline {
         stage('Build and Deploy') {
             steps {
                 script {
-                    // Load the Docker image to the target node
-            sh '''
-            ssh docker-user@13.232.170.253 'docker load'
-            docker save wordpress_app
-            '''
+                    // Build Docker image
+                    sh 'docker build -t wordpress_app .'
 
-            // Transfer the docker-compose.yml file
-            sh '''
-            scp docker-compose.yml docker-user@13.232.170.253:~/
-            '''
+                    // Save Docker image to a tar file
+                    sh 'docker save wordpress_app -o wordpress_app.tar'
 
-            // Only initialize Swarm if not already part of a swarm
-            sh '''
-            ssh docker-user@13.232.170.253 '
-                if ! docker info | grep -q "Swarm: active"; then
-                    docker swarm init
-                fi
-                MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD docker stack deploy -c docker-compose.yml wordpress_stack
-            '
-            '''
+                    // Copy the tar file to the Docker node
+                    sh "scp wordpress_app.tar ${SSH_USER}@${DOCKER_NODE_IP}:~/"
+
+                    // Load the image on the Docker node and clean up
+                    sh """
+                    ssh ${SSH_USER}@${DOCKER_NODE_IP} '
+                        docker load -i ~/wordpress_app.tar &&
+                        rm ~/wordpress_app.tar
+                    '
+                    """
+
+                    // Copy docker-compose.yml to the Docker node
+                    sh "scp docker-compose.yml ${SSH_USER}@${DOCKER_NODE_IP}:~/"
+
+                    // Deploy stack using docker-compose on the Docker node
+                    sh """
+                    ssh ${SSH_USER}@${DOCKER_NODE_IP} '
+                        MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} docker stack deploy -c docker-compose.yml wordpress_stack
+                    '
+                    """
                 }
             }
         }
     }
 }
-
