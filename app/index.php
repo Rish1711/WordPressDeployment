@@ -1,11 +1,6 @@
 <?php
 
-// Load environment variables from .env file
-require_once 'vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
-
-// Accessing environment variables
+// Accessing environment variables directly
 $host = getenv('DB_HOST');
 $dbname = getenv('DB_DATABASE');
 $username = getenv('DB_USERNAME');
@@ -20,11 +15,9 @@ if ($conn->connect_error) {
 }
 echo "Connected successfully";
 
-
 // Fetching all records from the users table
 $sql = "SELECT id, name, email FROM users";
 $result = $conn->query($sql);
-
 ?>
 
 <!DOCTYPE html>
@@ -79,15 +72,9 @@ $result = $conn->query($sql);
             </tbody>
         </table>
     </div>
-
-    <!-- Bootstrap JS (optional for additional functionalities) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
 
 <?php
-// Close the connection
 $conn->close();
 ?>

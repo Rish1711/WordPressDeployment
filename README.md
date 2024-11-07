@@ -1,35 +1,28 @@
-# My PHP Application with MySQL
 
-This is a simple PHP application that connects to a MySQL database using Docker containers.
+## Prerequisites
 
-## Requirements
+- **Docker**: Ensure Docker is installed and running.
+- **Jenkins**: A Jenkins server configured to run pipelines.
+- **MySQL Container**: An existing MySQL container configured with:
+  - **Database Name**: `wordpress`
+  - **Username**: `root`
+  - **Password**: Managed securely in Jenkins credentials.
 
-- Docker
-- Docker Compose
+## Environment Variables
+
+The PHP application uses the following environment variables to connect to the MySQL database:
+
+- `DB_HOST`: MySQL database host (e.g., `localhost`)
+- `DB_DATABASE`: Name of the MySQL database (set to `wordpress`)
+- `DB_USERNAME`: Username for MySQL (set to `root`)
+- `DB_PASSWORD`: Password for MySQL (retrieved securely from Jenkins credentials)
 
 ## Setup Instructions
 
-1. Clone this repository:
+### 1. Clone the Repository
 
-    ```bash
-    git clone https://github.com/your-repo/my-php-app.git
-    cd my-php-app
-    ```
+Clone this repository to your Jenkins server or development environment:
 
-2. Create a `.env` file by copying the example:
-
-    ```bash
-    cp .env.example .env
-    ```
-
-3. Start the application using Docker Compose:
-
-    ```bash
-    docker-compose up --build
-    ```
-
-4. The PHP app will be available at `http://localhost:8080`.
-
-## CI/CD Pipeline
-
-The Jenkins pipeline automates the build, test, and deployment process. Refer to the `Jenkinsfile` for pipeline configuration.
+```bash
+git clone https://github.com/your-repo/php-mysql-interface.git
+cd php-mysql-interface
