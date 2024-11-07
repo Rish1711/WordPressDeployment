@@ -1,9 +1,9 @@
 <?php
 
 // Accessing environment variables directly
-$host = getenv('DB_HOST');
-$dbname = getenv('DB_DATABASE');
-$username = getenv('DB_USERNAME');
+$host = "13.235.100.70:2375";
+$dbname = "Plutushub";
+$username = "user_plutus";
 $password = getenv('DB_PASSWORD');
 
 // Using MySQLi to connect to the database
